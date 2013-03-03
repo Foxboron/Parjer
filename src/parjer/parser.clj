@@ -1,5 +1,4 @@
-(ns parjer.parser
-  (:use [parjer.networks :as net]))
+(ns parjer.parser)
 
 (def evt-handler
   (atom {}))
@@ -10,7 +9,7 @@
 (defn re-parse [x]
   (re-matches #"^(?:[:](\S+) )?(\S+)(?: (?!:)(.+?))?(?: [:](.+))?$" x))
 
-(defn irc-parse [x]
+(defn irc-parse [conn x]
   (let [msg (re-parse x)
         cmd (msg 2)]
-    ((@evt-handler cmd) msg)))
+    ((@evt-handler cmd) conn msg)))

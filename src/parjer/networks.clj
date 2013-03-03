@@ -16,7 +16,7 @@
   (while (nil? (:exit @c))
     (let [msg (.readLine (:in @c))]
       (println msg)
-      (par/irc-parse msg))))
+      (par/irc-parse c msg))))
 
 (defn connect [serv]
   (let [sock (Socket. (:server server) (:port server))
