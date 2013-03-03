@@ -17,6 +17,6 @@
              (net/writeToOut c (str "PONG :" (x 4)))
              (println "Pong Sent")))
 
-(parser/add-event "001"
+(parser/add-event "MODE"
                   (fn [c x]
-                    nil))
+                    (net/writeToOut c (str "JOIN #lobby"))))

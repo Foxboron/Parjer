@@ -15,7 +15,6 @@
 (defn conn-handler [c]
   (while (nil? (:exit @c))
     (let [msg (.readLine (:in @c))]
-      (println msg)
       (par/irc-parse c msg))))
 
 (defn connect [serv]

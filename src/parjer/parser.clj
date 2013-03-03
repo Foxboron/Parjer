@@ -12,4 +12,6 @@
 (defn irc-parse [conn x]
   (let [msg (re-parse x)
         cmd (msg 2)]
-    ((@evt-handler cmd) conn msg)))
+    (if (contains? @evt-handler cmd)
+      ((@evt-handler cmd) conn msg)
+      (println cmd))))
