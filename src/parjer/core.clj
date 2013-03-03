@@ -1,5 +1,5 @@
 (ns parjer.core
-  (:require [parjer.networks :as rt]
+  (:require [parjer.network :as rt]
             [parjer.commands]))
 
 

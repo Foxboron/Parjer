@@ -1,6 +1,6 @@
 (ns parjer.commands
   (:require [parjer.parser :as parser :only (add-event)]
-            [parjer.networks :as net :only (writeToOut)]))
+            [parjer.network :as net :only (writeToOut)]))
 
 (parser/add-event "NOTICE"
            (fn [c x]
@@ -19,4 +19,4 @@
 
 (parser/add-event "MODE"
                   (fn [c x]
-                    (net/writeToOut c (str "JOIN #lobby"))))
+                    (net/writeToOut c (str "JOIN #penis"))))
