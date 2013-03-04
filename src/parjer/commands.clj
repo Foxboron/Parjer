@@ -1,9 +1,13 @@
 (ns parjer.commands
   (:require [parjer.parser :as parser :only (add-event evt-handler)]
             [parjer.network :as net :only (writeToOut joinChannel)]
-            [clojure.string :as s :only (split join)]))
+            [clojure.string :as s :only (split join)]
+            [clojail.core :only [sandbox]]
+            [clojail.testers :only [blacklist-symbols blacklist-objects]]))
 
-(def owner "Foxboron")
+(def sb (clojail.core/sandbox clojail.testers/secure-tester))
+
+(def owner #{"Foxboron" "ljos"})
 (def cmd-handler (atom {}))
 
 (defn add-cmd [event f]
@@ -36,13 +40,13 @@
                           cmd (re-find pat (x 4))
                           channel (x 3)]
                       (if cmd
-                        (if (= name owner)
+                        (if (contains? owner name)
                             (if (contains? @cmd-handler cmd)
                               ((@cmd-handler cmd) c x channel)))
                         (println x)))))
 
 (defn excp! [ev]
-  (try (load-string ev)
+  (try (sb 'ev)
        (catch Exception e (str "Exception: " (.getMessage e)))))
 
 
