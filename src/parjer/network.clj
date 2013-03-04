@@ -6,9 +6,9 @@
 
 (def nick "Cjoey")
 
-(def server {:server "irc.codetalk.io"
-             :port 6667
-             :chan "#lobby"})
+(def server {:server "bd.ntg.cx"
+             :port 13337
+             :chan "#penis"})
 
 (defn conn-handler [c]
   (while (nil? (:exit @c))

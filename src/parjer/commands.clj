@@ -32,23 +32,34 @@
 (parser/add-event "PRIVMSG"
                   (fn [c x]
                     (let [name ((clojure.string/split (x 1) #"!") 0)
-                          cmd (re-find pat (x 4))]
+                          cmd (re-find pat (x 4))
+                          channel (x 3)]
                       (if cmd
                         (if (contains? @cmd-handler cmd)
-                          ((@cmd-handler cmd) c x))
+                          ((@cmd-handler cmd) c x channel))
                         (println x)))))
+
+(defn excp! [ev]
+  (try (load-string ev)
+       (catch Exception e (str "Exception: " (.getMessage e)))))
+
 
 ;;; Common! Tell me how stupid i am!
 (add-cmd "eval"
-         (fn [c x]
+         (fn [c x channel]
            (let [st (s/join " " (rest (s/split (x 4) #" ")))]
-             (net/writeToIRC c (x 3) (load-string st)))))
+             (net/writeToIRC c channel (excp! st)))))
 
 (add-cmd "uptime"
-         (fn [c x]
-           (net/writeToIRC c (x 3) "NOTIME")))
+         (fn [c x channel]
+           (net/writeToIRC c channel "NOTIME")))
 
 (add-cmd "say"
-         (fn [c x]
+         (fn [c x channel]
            (let [st (s/join " " (rest (s/split (x 4) #" ")))]
-             (net/writeToIRC c (x 3) st))))
+             (net/writeToIRC c channel st))))
+
+;;; This is random. I am 100% sure!
+(add-cmd "dice"
+         (fn [c x channel]
+           (net/writeToIRC c channel "4")))
