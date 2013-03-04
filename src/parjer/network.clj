@@ -8,8 +8,8 @@
 
 (def live? (atom false))
 
-(def server {:server "bd.ntg.cx"
-             :port 13337
+(def server {:server "irc.codetalk.io"
+             :port 6667
              :chan "#lobby"})
 
 (defn conn-handler [c]
@@ -38,8 +38,8 @@
   (writeToOut conn (str "USER " nick " 0 * : " nick)))
 
 
-(defn join [x]
-  nil)
+(defn writeToIRC [c chan msg]
+  (writeToOut c (str "PRIVMSG " chan " :I HAZ NO TIME FAGGOT!")))
 
 (defn ccn []
   (let [irc (connect server)]
