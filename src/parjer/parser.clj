@@ -13,5 +13,6 @@
   (let [msg (re-parse x)
         cmd (msg 2)]
     (if (contains? @evt-handler cmd)
-      ((@evt-handler cmd) conn msg)
-      (println cmd))))
+      ((@evt-handler cmd) conn msg))
+    (println cmd)
+    (println x)))

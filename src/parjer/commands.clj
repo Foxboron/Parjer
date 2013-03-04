@@ -1,6 +1,7 @@
 (ns parjer.commands
   (:require [parjer.parser :as parser :only (add-event evt-handler)]
-            [parjer.network :as net :only (writeToOut)]))
+            [parjer.network :as net :only (writeToOut joinChannel)]
+            [clojure.string :as s :only (split join)]))
 
 (def cmd-handler (atom {}))
 
@@ -13,7 +14,6 @@
 
 (parser/add-event "NOTICE"
            (fn [c x]
-             (println "do you even?")
              (println "Notice: " x)))
 
 (parser/add-event "PART"
@@ -22,22 +22,33 @@
 
 (parser/add-event "PING"
            (fn [c x]
-             (println x)
              (net/writeToOut c (str "PONG :" (x 4)))
              (println "Pong Sent")))
 
 (parser/add-event "MODE"
                   (fn [c x]
-                    (net/writeToOut c (str "JOIN #lobby"))))
+                    (net/joinChannel c)))
 
 (parser/add-event "PRIVMSG"
                   (fn [c x]
                     (let [name ((clojure.string/split (x 1) #"!") 0)
                           cmd (re-find pat (x 4))]
                       (if cmd
-                        (if (contains? @cmd-handler  cmd)
-                          ((@cmd-handler cmd) c x))))))
+                        (if (contains? @cmd-handler cmd)
+                          ((@cmd-handler cmd) c x))
+                        (println x)))))
 
-(add-cmd "time"
+;;; Common! Tell me how stupid i am!
+(add-cmd "eval"
          (fn [c x]
-           (net/writeToIRC c (x 3) x)))
+           (let [st (s/join " " (rest (s/split (x 4) #" ")))]
+             (net/writeToIRC c (x 3) (load-string st)))))
+
+(add-cmd "uptime"
+         (fn [c x]
+           (net/writeToIRC c (x 3) "NOTIME")))
+
+(add-cmd "say"
+         (fn [c x]
+           (let [st (s/join " " (rest (s/split (x 4) #" ")))]
+             (net/writeToIRC c (x 3) st))))

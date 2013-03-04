@@ -6,8 +6,6 @@
 
 (def nick "Cjoey")
 
-(def live? (atom false))
-
 (def server {:server "irc.codetalk.io"
              :port 6667
              :chan "#lobby"})
@@ -16,6 +14,7 @@
   (while (nil? (:exit @c))
     (let [msg (.readLine (:in @c))]
       (par/irc-parse c msg))))
+
 
 (defn connect [serv]
   (let [sock (Socket. (:server server) (:port server))
@@ -35,11 +34,13 @@
 
 (defn sendinfo [conn]
   (writeToOut conn (str "NICK " nick))
-  (writeToOut conn (str "USER " nick " 0 * : " nick)))
-
+  (writeToOut conn (str "USER " nick " 0 * :" nick)))
 
 (defn writeToIRC [c chan msg]
-  (writeToOut c (str "PRIVMSG " chan " :I HAZ NO TIME FAGGOT!")))
+  (writeToOut c (str "PRIVMSG " chan " :" msg)))
+
+(defn joinChannel [c]
+  (writeToOut c (str "JOIN " (server :chan))))
 
 (defn ccn []
   (let [irc (connect server)]
