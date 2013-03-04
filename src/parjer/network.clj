@@ -6,9 +6,9 @@
 
 (def nick "Cjoey")
 
-(def server {:server "bd.ntg.cx"
-             :port 13337
-             :chan "#penis"})
+(def server {:server "irc.codetalk.io"
+             :port 6667
+             :chan "#lobby"})
 
 (defn conn-handler [c]
   (while (nil? (:exit @c))
@@ -39,8 +39,9 @@
 (defn writeToIRC [c chan msg]
   (writeToOut c (str "PRIVMSG " chan " :" msg)))
 
-(defn joinChannel [c]
-  (writeToOut c (str "JOIN " (server :chan))))
+(defn joinChannel
+  ([c] (writeToOut c (str "JOIN " (server :chan))))
+  ([c chan] (writeToOut c (str "JOIN " chan))))
 
 (defn ccn []
   (let [irc (connect server)]

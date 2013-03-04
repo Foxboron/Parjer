@@ -3,6 +3,7 @@
             [parjer.network :as net :only (writeToOut joinChannel)]
             [clojure.string :as s :only (split join)]))
 
+(def owner "Foxboron")
 (def cmd-handler (atom {}))
 
 (defn add-cmd [event f]
@@ -35,8 +36,9 @@
                           cmd (re-find pat (x 4))
                           channel (x 3)]
                       (if cmd
-                        (if (contains? @cmd-handler cmd)
-                          ((@cmd-handler cmd) c x channel))
+                        (if (= name owner)
+                            (if (contains? @cmd-handler cmd)
+                              ((@cmd-handler cmd) c x channel)))
                         (println x)))))
 
 (defn excp! [ev]
@@ -63,3 +65,12 @@
 (add-cmd "dice"
          (fn [c x channel]
            (net/writeToIRC c channel "4")))
+
+(add-cmd "join"
+         (fn [c x channel]
+           (let [st ((s/split (x 4) #" ") 1)]
+             (net/joinChannel c st))))
+(add-cmd "part"
+         (fn [c x channel]
+           (let [st ((s/split (x 4) #" ") 1)]
+             (net/writeToOut (str "PART " st)))))
