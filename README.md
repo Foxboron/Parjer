@@ -26,6 +26,7 @@ The bot itself got some basic commands:
 * part
     Parts a channel
 
+
 ## License
 
 Copyright © 2013 Morten "Foxboron" Linderud
