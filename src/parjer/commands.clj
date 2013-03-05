@@ -5,8 +5,6 @@
             [clojail.core :only [sandbox]]
             [clojail.testers :only [blacklist-symbols blacklist-objects]]))
 
-(def sb (clojail.core/sandbox clojail.testers/secure-tester))
-
 (def owner #{"Foxboron" "ljos"})
 (def cmd-handler (atom {}))
 
@@ -40,13 +38,20 @@
                           cmd (re-find pat (x 4))
                           channel (x 3)]
                       (if cmd
-                        (if (contains? owner name)
+                        (if true ;;; Add ignored users here!
                             (if (contains? @cmd-handler cmd)
                               ((@cmd-handler cmd) c x channel)))
                         (println x)))))
 
+;;; Lets sandbox this....better....
+
+(def tester [(clojail.testers/blacklist-symbols #{'alter-var-root})
+             (clojail.testers/blacklist-objects [java.lang.Thread])]) ; Create a blacklist.
+
+(def sb (clojail.core/sandbox clojail.testers/secure-tester :timeout 5000))
+
 (defn excp! [ev]
-  (try (sb 'ev)
+  (try (sb (read-string ev))
        (catch Exception e (str "Exception: " (.getMessage e)))))
 
 
@@ -64,6 +69,7 @@
          (fn [c x channel]
            (let [st (s/join " " (rest (s/split (x 4) #" ")))]
              (net/writeToIRC c channel st))))
+
 
 ;;; This is random. I am 100% sure!
 (add-cmd "dice"
