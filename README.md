@@ -16,15 +16,15 @@ The setup file should be simple enough.
 
 The bot itself got some basic commands:
 * eval
-    Uses clojail to sandbox the input. You need a `~/.java.policy` file to use this feature.
+  Uses clojail to sandbox the input. You need a `~/.java.policy` file to use this feature.
 * dice
-    Returns 4. I am 100% sure this is a random number.
+  Returns 4. I am 100% sure this is a random number.
 * say
-    Return what ever typed into it.
+  Return what ever typed into it.
 * join
-    Joins a channel.
+  Joins a channel.
 * part
-    Parts a channel
+  Parts a channel
 
 
 ## License
