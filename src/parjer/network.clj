@@ -1,6 +1,6 @@
 (ns parjer.network
-  (:use [clojure.java.io :only [reader writer]]
-        [parjer.parser :as par])
+  (:require [parjer.parser :as par :refer (irc-parse)]
+            [parjer.config])
   (:import (java.net Socket)
            (java.io PrintWriter InputStreamReader BufferedReader)))
 
@@ -13,7 +13,7 @@
 (defn conn-handler [c]
   (while (nil? (:exit @c))
     (let [msg (.readLine (:in @c))]
-      (par/irc-parse c msg))))
+      (irc-parse c msg))))
 
 
 (defn connect [serv]
