@@ -1,0 +1,6 @@
+{:nick "Cjoey"
+ :server "irc.codetalk.io"
+ :port 6667
+ :chan "#lobby"
+ :owner #{Foxboron}
+ :mark "@"}

@@ -1,14 +1,12 @@
 (ns parjer.network
-  (:require [parjer.parser :as par :refer (irc-parse)]
-            [parjer.config])
+  (:require [parjer.parser :refer (irc-parse)]
+            [parjer.config :refer (fetch-conf)])
   (:import (java.net Socket)
            (java.io PrintWriter InputStreamReader BufferedReader)))
 
-(def nick "Cjoey")
+(def nick ((fetch-conf) :nick))
 
-(def server {:server "irc.codetalk.io"
-             :port 6667
-             :chan "#lobby"})
+(def server (fetch-conf))
 
 (defn conn-handler [c]
   (while (nil? (:exit @c))
@@ -33,6 +31,8 @@
     (.flush)))
 
 (defn sendinfo [conn]
+  (println nick)
+  (println "lol")
   (writeToOut conn (str "NICK " nick))
   (writeToOut conn (str "USER " nick " 0 * :" nick)))
 

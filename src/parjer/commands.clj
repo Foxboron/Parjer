@@ -1,7 +1,7 @@
 (ns parjer.commands
   (:require [parjer.parser :as parser :refer (add-event evt-handler)]
             [parjer.config :refer (fetch-conf)]
-            [parjer.network :as net :refer (writeToOut joinChannel)]
+            [parjer.network :as net :refer (writeToOut joinChannel writeToIRC)]
             [clojure.string :as s :refer (split join)]
             [clojail.core :refer [sandbox]]
             [clojail.testers :refer [secure-tester]]))
@@ -11,7 +11,7 @@
 (defn add-cmd [event f]
   (swap! cmd-handler assoc event f))
 
-(def mark "@")
+(def mark ((fetch-conf) :mark))
 
 (def pat
   (re-pattern (str "[^" mark "][\\d\\w\\S]*")))
