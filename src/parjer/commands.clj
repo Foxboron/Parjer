@@ -1,7 +1,7 @@
 (ns parjer.commands
   (:require [parjer.parser :as parser :refer (add-event evt-handler)]
             [parjer.config :refer (fetch-conf)]
-            [parjer.network :as net :refer (writeToOut joinChannel writeToIRC)]
+            [parjer.network :as net :refer (write-to-out join-channel write-to-irc)]
             [clojure.string :as s :refer (split join)]
             [clojail.core :refer [sandbox]]
             [clojail.testers :refer [secure-tester]]))
@@ -16,33 +16,39 @@
 (def pat
   (re-pattern (str "[^" mark "][\\d\\w\\S]*")))
 
-(add-event "NOTICE"
-           (fn [c x]
-             (println "Notice: " x)))
+(defmacro event [e & args-body]
+  `(add-event ~e (fn ~@args-body)))
 
-(add-event "PART"
-           (fn [c x]
-             (println "Part")))
+(defmacro cmd [e & args-body]
+  `(add-cmd ~e (fn ~@args-body)))
 
-(add-event "PING"
-           (fn [c x]
-             (writeToOut c (str "PONG :" (x 4)))
-             (println "Pong Sent")))
+(event "NOTICE"
+       [c x]
+       (println nil))
 
-(add-event "MODE"
-           (fn [c x]
-             (joinChannel c)))
+(event "PART"
+       [c x]
+       (println "Part"))
 
-(add-event "PRIVMSG"
-           (fn [c x]
-             (let [name ((split (x 1) #"!") 0)
-                   cmd (re-find pat (x 4))
-                   channel (x 3)]
-               (if cmd
-                 (if true ;;; Add ignored users here!
-                   (if (contains? @cmd-handler cmd)
-                     ((@cmd-handler cmd) c x channel)))
-                 (println x)))))
+(event "PING"
+       [c x]
+       (write-to-out c (str "PONG :" (x 4)))
+       (println "Pong Sent"))
+
+(event "MODE"
+       [c x]
+       (join-channel c))
+
+(event "PRIVMSG"
+       [c x]
+       (let [name ((split (x 1) #"!") 0)
+             cmd (re-find pat (x 4))
+             channel (x 3)]
+         (if cmd
+           (if true ;;; Add ignored users here!
+             (if (contains? @cmd-handler cmd)
+               ((@cmd-handler cmd) c x channel)))
+           (println cmd))))
 
 ;;; Lets sandbox this....better....
 (def sb (sandbox secure-tester :timeout 5000))
@@ -53,32 +59,32 @@
 
 
 ;;; Common! Tell me how stupid i am!
-(add-cmd "eval"
-         (fn [c x channel]
-           (let [st (join " " (rest (split (x 4) #" ")))]
-             (writeToIRC c channel (excp! st)))))
+(cmd "eval"
+     [c x channel]
+     (let [st (join " " (rest (split (x 4) #" ")))]
+       (write-to-irc c channel (excp! st))))
 
-(add-cmd "uptime"
-         (fn [c x channel]
-           (writeToIRC c channel "NOTIME")))
+(cmd "uptime"
+     [c x channel]
+     (write-to-irc c channel "NOTIME"))
 
-(add-cmd "say"
-         (fn [c x channel]
-           (let [st (join " " (rest (split (x 4) #" ")))]
-             (writeToIRC c channel st))))
+(cmd "say"
+     [c x channel]
+     (let [st (join " " (rest (split (x 4) #" ")))]
+       (write-to-irc c channel st)))
 
 
 ;;; This is random. I am 100% sure!
-(add-cmd "dice"
-         (fn [c x channel]
-           (writeToIRC c channel "4")))
+(cmd "dice"
+     [c x channel]
+     (write-to-irc c channel "4"))
 
-(add-cmd "join"
-         (fn [c x channel]
-           (let [st ((split (x 4) #" ") 1)]
-             (joinChannel c st))))
+(cmd "join"
+     [c x channel]
+     (let [st ((split (x 4) #" ") 1)]
+       (join-channel c st)))
 
-(add-cmd "part"
-         (fn [c x channel]
-           (let [st ((split (x 4) #" ") 1)]
-             (writeToOut (str "PART " st)))))
+(cmd "part"
+     [c x channel]
+     (let [st ((split (x 4) #" ") 1)]
+       (write-to-out (str "PART " st))))

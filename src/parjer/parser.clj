@@ -14,5 +14,5 @@
         cmd (msg 2)]
     (if (contains? @evt-handler cmd)
       ((@evt-handler cmd) conn msg))
-    (println cmd)
-    (println x)))
+    (println cmd) ;; cmd
+    (println x))) ;; x
