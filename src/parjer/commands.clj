@@ -30,7 +30,7 @@
 
 (event "NOTICE"
        [c x]
-       (println nil))
+       (println "Notice: " x))
 
 (event "PART"
        [c x]
@@ -49,11 +49,14 @@
        [c x]
        (let [name ((split (x 1) #"!") 0)
              cmd (re-find pat (x 4))
-             channel (x 3)]
-         (if cmd
-           (if (contains? ignore-list name) ;;; Add ignored users here!
+             channel (x 3)
+             args (rest (split (x 4) #" "))
+             info-map {:chan channel :nick name :cmd cmd :raw x :out c :args args}]
+         (println info-map)
+         (if (false? (contains? ignore-list name))
+           (if true ;;; Add ignored users here!
              (if (contains? @cmd-handler cmd)
-               ((@cmd-handler cmd) c x channel)))
+               ((@cmd-handler cmd) info-map)))
            (println cmd))))
 
 ;;; Lets sandbox this....better....
@@ -66,41 +69,41 @@
 
 ;;; Common! Tell me how stupid i am!
 (cmd "eval"
-     [c x channel]
-     (let [st (join " " (rest (split (x 4) #" ")))]
-       (write-to-irc c channel (excp! st))))
+     [imap]
+     (let [st (join " " (imap :args))]
+       (write-to-irc imap (excp! st))))
 
 (cmd "uptime"
-     [c x channel]
-     (write-to-irc c channel "NOTIME"))
+     [imap]
+     (write-to-irc imap "NOTIME"))
 
 (cmd "say"
-     [c x channel]
-     (let [st (join " " (rest (split (x 4) #" ")))]
-       (write-to-irc c channel st)))
+     [imap]
+     (let [st (join " " (imap :args))]
+       (println "lol?")
+       (write-to-irc imap st)))
 
 
 ;;; This is random. I am 100% sure!
 (cmd "dice"
-     [c x channel]
-     (write-to-irc c channel "4"))
+     [imap]
+     (write-to-irc imap "4"))
 
 (cmd "join"
-     [c x channel]
-     (let [st ((split (x 4) #" ") 1)]
-       (join-channel c st)))
+     [imap]
+     (join-channel (imap :out) (imap :chan)))
 
 (cmd "part"
-     [c x channel]
-     (let [st ((split (x 4) #" ") 1)]
-       (write-to-out (str "PART " st))))
+     [imap]
+     (let [st ((imap :args) 1)]
+       (write-to-out (str "PART :" st))))
 
 (cmd "add-ignore"
-     [c x channel]
-     (let [st ((split (x 4) #" ") 1)]
+     [imap]
+     (let [st ((imap :args) 1)]
        (add-to-ignore st)))
 
 (cmd "remove-ignore"
-     [c x channel]
-     (let [st ((split (x 4) #" ") 1)]
-       (reset! v (remove #(= % st)))))
+     [imap]
+     (let [st ((imap :args) 1)]
+       (reset! ignore-list (remove #(= % st)))))
