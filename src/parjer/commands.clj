@@ -8,8 +8,14 @@
 
 (def cmd-handler (atom {}))
 
+(def ignore-list (atom #{}))
+
 (defn add-cmd [event f]
   (swap! cmd-handler assoc event f))
+
+(defn add-to-ignore [name]
+  (swap! ignore-list conj name))
+
 
 (def mark ((fetch-conf) :mark))
 
@@ -45,7 +51,7 @@
              cmd (re-find pat (x 4))
              channel (x 3)]
          (if cmd
-           (if true ;;; Add ignored users here!
+           (if (contains? ignore-list name) ;;; Add ignored users here!
              (if (contains? @cmd-handler cmd)
                ((@cmd-handler cmd) c x channel)))
            (println cmd))))
@@ -88,3 +94,13 @@
      [c x channel]
      (let [st ((split (x 4) #" ") 1)]
        (write-to-out (str "PART " st))))
+
+(cmd "add-ignore"
+     [c x channel]
+     (let [st ((split (x 4) #" ") 1)]
+       (add-to-ignore st)))
+
+(cmd "remove-ignore"
+     [c x channel]
+     (let [st ((split (x 4) #" ") 1)]
+       (reset! v (remove #(= % st)))))
