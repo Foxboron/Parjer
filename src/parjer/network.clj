@@ -40,7 +40,7 @@
   (write-to-out c (str "JOIN " chan)))
 
 (defn join-channel
-  ([c] (join? c (server :chan)))
+  ([c] (doseq [i (server :chan)] (join? c i)))
   ([c chan] (join? c chan)))
 
 (defn ccn []

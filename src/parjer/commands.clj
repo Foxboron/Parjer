@@ -52,11 +52,9 @@
              channel (x 3)
              args (rest (split (x 4) #" "))
              info-map {:chan channel :nick name :cmd cmd :raw x :out c :args args}]
-         (println info-map)
-         (if (false? (contains? ignore-list name))
-           (if true ;;; Add ignored users here!
-             (if (contains? @cmd-handler cmd)
-               ((@cmd-handler cmd) info-map)))
+         (if (false? (contains? ignore-list name))  ;;; Add ignored users here!
+           (if (contains? @cmd-handler cmd)
+             ((@cmd-handler cmd) info-map))
            (println cmd))))
 
 ;;; Lets sandbox this....better....
@@ -80,7 +78,6 @@
 (cmd "say"
      [imap]
      (let [st (join " " (imap :args))]
-       (println "lol?")
        (write-to-irc imap st)))
 
 
