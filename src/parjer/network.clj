@@ -37,9 +37,9 @@
   (write-to-out (imap :out) (str "PRIVMSG " (imap :chan) " :" msg)))
 
 (defn join? [c chan]
-  (write-to-out c (str "JOIN " chan)))
+  (write-to-out c (str "JOIN :" chan)))
 
-(defn join-channel
+(defn join-channels
   ([c] (doseq [i (server :chan)] (join? c i)))
   ([c chan] (join? c chan)))
 

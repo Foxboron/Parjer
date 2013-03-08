@@ -1,7 +1,7 @@
 (ns parjer.commands
   (:require [parjer.parser :as parser :refer (add-event evt-handler)]
             [parjer.config :refer (fetch-conf)]
-            [parjer.network :as net :refer (write-to-out join-channel write-to-irc)]
+            [parjer.network :as net :refer (write-to-out join-channels write-to-irc)]
             [clojure.string :as s :refer (split join)]
             [clojail.core :refer [sandbox]]
             [clojail.testers :refer [secure-tester]]))
@@ -43,7 +43,7 @@
 
 (event "MODE"
        [c x]
-       (join-channel c))
+       (join-channels c))
 
 (event "PRIVMSG"
        [c x]
@@ -52,8 +52,8 @@
              channel (x 3)
              args (rest (split (x 4) #" "))
              info-map {:chan channel :nick name :cmd cmd :raw x :out c :args args}]
-         (if (false? (contains? ignore-list name))  ;;; Add ignored users here!
-           (if (contains? @cmd-handler cmd)
+         (if (false? (contains? ignore-list name))  ;;; Check for ignored users
+           (if (contains? @cmd-handler cmd)         ;;; Is the cmd in the handler?
              ((@cmd-handler cmd) info-map))
            (println cmd))))
 
@@ -88,12 +88,13 @@
 
 (cmd "join"
      [imap]
-     (join-channel (imap :out) (imap :chan)))
+     (let [chan (first (imap :args))]
+       (join-channels (imap :out) chan)))
 
 (cmd "part"
      [imap]
-     (let [st ((imap :args) 1)]
-       (write-to-out (str "PART :" st))))
+     (let [st (first (imap :args))]
+       (write-to-out (imap :out) (str "PART :" st))))
 
 (cmd "add-ignore"
      [imap]
@@ -104,3 +105,14 @@
      [imap]
      (let [st ((imap :args) 1)]
        (reset! ignore-list (remove #(= % st)))))
+
+(cmd "whisper"
+     [imap]
+     (let  [chan (first (imap :args))
+            say (join " " (rest (imap :args)))]
+       (write-to-out (imap :out) (str "PRIVMSG " chan " :" say))))
+
+(cmd "help"
+     [imap]
+     (let [cmd-help "Read the source luke!"]
+       (write-to-irc imap cmd-help)))
