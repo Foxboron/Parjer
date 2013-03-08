@@ -36,12 +36,12 @@
 (defn write-to-irc [imap msg]
   (write-to-out (imap :out) (str "PRIVMSG " (imap :chan) " :" msg)))
 
-(defn join? [c chan]
+(defn join! [c chan]
   (write-to-out c (str "JOIN :" chan)))
 
 (defn join-channels
-  ([c] (doseq [i (server :chan)] (join? c i)))
-  ([c chan] (join? c chan)))
+  ([c] (doseq [i (server :chan)] (join! c i)))
+  ([c chan] (join! c chan)))
 
 (defn ccn []
   (let [irc (connect server)]

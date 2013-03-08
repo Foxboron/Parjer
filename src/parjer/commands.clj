@@ -116,3 +116,12 @@
      [imap]
      (let [cmd-help "Read the source luke!"]
        (write-to-irc imap cmd-help)))
+
+(cmd "reload"
+     [imap]
+     (load-file "src/parjer/commands.clj"))
+
+(cmd "kick"
+     [imap]
+     (let [nick (first (imap :args))]
+       (write-to-out (join " " "/kick" (imap :chan) nick))))
