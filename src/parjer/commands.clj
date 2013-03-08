@@ -124,4 +124,4 @@
 (cmd "kick"
      [imap]
      (let [nick (first (imap :args))]
-       (write-to-out (join " " "/kick" (imap :chan) nick))))
+       (write-to-out (str "/kick " (imap :chan) " " nick))))
