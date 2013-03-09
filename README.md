@@ -8,7 +8,7 @@ A very basic IRCBot in Clojure.
 {:nick "Cjoey"
  :server "irc.codetalk.io"
  :port 6667
- :chan "#lobby"
+ :chan #{"#lobby" "#bot"}
  :owner #{Foxboron}
  :mark "@"}
 ```

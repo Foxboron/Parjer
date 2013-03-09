@@ -2,6 +2,7 @@
   (:require [parjer.parser :as parser :refer (add-event evt-handler)]
             [parjer.config :refer (fetch-conf)]
             [parjer.network :as net :refer (write-to-out join-channels write-to-irc)]
+            [parjer.quote :refer :all]
             [clojure.string :as s :refer (split join)]
             [clojail.core :refer [sandbox]]
             [clojail.testers :refer [secure-tester]]))
@@ -69,7 +70,7 @@
 (cmd "eval"
      [imap]
      (let [st (join " " (imap :args))]
-       (write-to-irc imap (excp! st))))
+       (write-to-irc imap (str "λ → " (excp! st)))))
 
 (cmd "uptime"
      [imap]
@@ -114,7 +115,7 @@
 
 (cmd "help"
      [imap]
-     (let [cmd-help "Read the source luke!"]
+     (let [cmd-help "Read the source vz!"]
        (write-to-irc imap cmd-help)))
 
 (cmd "reload"
@@ -124,4 +125,9 @@
 (cmd "kick"
      [imap]
      (let [nick (first (imap :args))]
-       (write-to-out (str "/kick " (imap :chan) " " nick))))
+       (write-to-out (imap :out) (str "KICK " (imap :chan) " " nick " :Bot Kick"))))
+
+(cmd "quote"
+     [imap]
+     (let [qu (rand-quote)]
+       (write-to-irc imap qu)))
