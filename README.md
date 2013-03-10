@@ -6,7 +6,7 @@ A very basic IRCBot in Clojure.
 
 ```clojure
 {:nick "Cjoey"
- :servers [{:server "irc.blabla.com
+ :servers [{:server "irc.blabla.com"
             :port 6667
             :chans #{"#lobby"}}
            {:server "irc.blabla.com"
