@@ -1,7 +1,7 @@
 (ns parjer.commands
   (:require [parjer.parser :as parser :refer (add-event evt-handler)]
             [parjer.config :refer (fetch-conf)]
-            [parjer.network :as net :refer (join! write-to-out join-channels write-to-irc)]
+            [parjer.network :as net :refer (join! write-to-out join-channels write-to-irc connect*)]
             [parjer.quote :refer :all]
             [clojure.string :as s :refer (split join)]
             [clojail.core :refer [sandbox]]
@@ -139,3 +139,12 @@
      (let [nick (first (imap :args))]
        (if (contains? owner (imap :nick))
          (write-to-out (imap :out) (str "NICK " nick)))))
+
+
+(cmd "connect"
+     [imap]
+     (let [server (first (imap :args))
+           port (Integer. (first (rest (imap :args))))
+           channels (set (rest (rest (imap :args))))
+           sock (Socket. server port)]
+       (connect* sock channels)))

@@ -6,31 +6,21 @@ A very basic IRCBot in Clojure.
 
 ```clojure
 {:nick "Cjoey"
- :server "irc.codetalk.io"
- :port 6667
- :chan #{"#lobby" "#bot"}
- :owner #{Foxboron}
+ :servers [{:server "irc.blabla.com
+            :port 6667
+            :chans #{"#lobby"}}
+           {:server "irc.blabla.com"
+            :port 13337
+            :chans #{"#bot"}}]
+ :owner #{"Foxboron", "Guy2"}
  :mark "@"}
 ```
-The setup file should be simple enough.
+`lein deps`
+`lein run`
 
-The bot itself got some basic commands:
+The setup file should be simple enough.  
 
-* eval  
- Uses clojail to sandbox the input. You need a `~/.java.policy` file to use this feature.
-
-* dice  
-  Returns 4. I am 100% sure this is a random number.
-
-* say  
-  Return what ever typed into it.
-
-* join  
-  Joins a channel.
-
-* part  
-  Parts a channel
-
+The bot itself got some basic commands, use help and try guess :D  
 
 ## License
 
