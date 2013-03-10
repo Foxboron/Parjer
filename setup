@@ -1,6 +1,9 @@
 {:nick "Cjoey"
- :server "irc.codetalk.io"
- :port 6667
- :chan ["#bot" "#lobby"]
- :owner #{Foxboron}
+ :servers [{:server "irc.codetalk.io"
+            :port 6667
+            :chans #{"#lobby"}}
+           {:server "bd.ntg.cx"
+            :port 13337
+            :chans #{"#penis"}}]
+ :owner #{"Foxboron"}
  :mark "@"}

@@ -17,6 +17,7 @@
 (defn add-to-ignore [name]
   (swap! ignore-list conj name))
 
+(def owner ((fetch-conf) :owner))
 
 (def mark ((fetch-conf) :mark))
 
@@ -44,19 +45,19 @@
 
 (event "MODE"
        [c x]
-       (join-channels c))
+       (join-channels c (@c :chans)))
 
 (event "PRIVMSG"
        [c x]
        (let [name ((split (x 1) #"!") 0)
-             cmd (re-find pat (x 4))
+             cmd (if (= mark (str (first (x 4)))) (re-find pat (x 4)) "")
              channel (x 3)
              args (rest (split (x 4) #" "))
              info-map {:chan channel :nick name :cmd cmd :raw x :out c :args args}]
-         (if (false? (contains? ignore-list name))  ;;; Check for ignored users
+         (if (false? (contains? ignore-list name)) ;;; Check for ignored users
            (if (contains? @cmd-handler cmd)         ;;; Is the cmd in the handler?
-             ((@cmd-handler cmd) info-map))
-           (println cmd))))
+             ((@cmd-handler cmd) info-map)))
+         (println cmd)))
 
 ;;; Lets sandbox this....better....
 (def sb (sandbox secure-tester :timeout 5000))
@@ -99,13 +100,13 @@
 
 (cmd "add-ignore"
      [imap]
-     (let [st ((imap :args) 1)]
+     (let [st (first (imap :args))]
        (add-to-ignore st)))
 
 (cmd "remove-ignore"
      [imap]
-     (let [st ((imap :args) 1)]
-       (reset! ignore-list (remove #(= % st)))))
+     (let [st (first (imap :args))]
+       (reset! ignore-list (remove #(= % st) ignore-list))))
 
 (cmd "whisper"
      [imap]
@@ -131,3 +132,9 @@
      [imap]
      (let [qu (rand-quote)]
        (write-to-irc imap qu)))
+
+(cmd "nick"
+     [imap]
+     (let [nick (first (imap :args))]
+       (if (contains? owner (imap :nick))
+         (write-to-out (imap :out) (str "NICK " nick)))))

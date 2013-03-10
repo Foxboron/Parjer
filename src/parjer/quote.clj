@@ -3,7 +3,9 @@
 
 (def website (html-resource (java.net.URL. "http://www.cs.yale.edu/quotes.html")))
 
-(def quotes (filter #(not= "\n" %) (flatten (map :content (flatten (select website [:p]))))))
+
+;;; Thanks TimMc ^^
+(def quotes (->> (select website [:p]) (map (comp #(.replaceAll % "\n" " ") clojure.string/trim first unwrap)) (filter not-empty)))
 
 (defn rand-quote []
   (let [n (rand-int (count quotes))]

@@ -7,22 +7,7 @@
 
 (def nick ((fetch-conf) :nick))
 
-(def server (fetch-conf))
-
-(defn conn-handler [c]
-  (while (nil? (:exit @c))
-    (let [msg (.readLine (:in @c))]
-      (irc-parse c msg))))
-
-(defn connect [serv]
-  (let [sock (Socket. (:server server) (:port server))
-        in (BufferedReader. (InputStreamReader. (.getInputStream sock)))
-        out (PrintWriter. (.getOutputStream sock))
-        conn (ref {:in in :out out})]
-    (doto
-        (Thread.
-         #(conn-handler conn)) (.start))
-    conn))
+(def servers ((fetch-conf) :servers))
 
 (defn write-to-out [c msg]
   (doto (:out @c)
@@ -33,6 +18,25 @@
   (write-to-out conn (str "NICK " nick))
   (write-to-out conn (str "USER " nick " 0 * :" nick)))
 
+(defn conn-handler [c]
+  (send-info c)
+  (while (nil? (:exit @c))
+    (let [msg (.readLine (:in @c))]
+      (irc-parse c msg))))
+
+(defn connect* [sock chans]
+  (let [in (BufferedReader. (InputStreamReader. (.getInputStream sock)))
+        out (PrintWriter. (.getOutputStream sock))
+        conn (ref {:in in :out out :chans chans})]
+    (doto
+        (Thread.
+         #(conn-handler conn)) (.start))))
+
+(defn connect [servs]
+  (doseq [i servs]
+    (let [s (Socket. (i :server) (i :port))]
+      (connect* s (i :chans)))))
+
 (defn write-to-irc [imap msg]
   (write-to-out (imap :out) (str "PRIVMSG " (imap :chan) " :" msg)))
 
@@ -40,9 +44,7 @@
   (write-to-out c (str "JOIN :" chan)))
 
 (defn join-channels
-  ([c] (doseq [i (server :chan)] (join! c i)))
-  ([c chan] (join! c chan)))
+  ([c chans] (doseq [i chans] (join! c i))))
 
 (defn ccn []
-  (let [irc (connect server)]
-    (send-info irc)))
+  (connect servers))
