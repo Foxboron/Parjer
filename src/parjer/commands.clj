@@ -1,7 +1,7 @@
 (ns parjer.commands
   (:require [parjer.parser :as parser :refer (add-event evt-handler)]
             [parjer.config :refer (fetch-conf)]
-            [parjer.network :as net :refer (write-to-out join-channels write-to-irc)]
+            [parjer.network :as net :refer (join! write-to-out join-channels write-to-irc)]
             [parjer.quote :refer :all]
             [clojure.string :as s :refer (split join)]
             [clojail.core :refer [sandbox]]
@@ -54,7 +54,7 @@
              channel (x 3)
              args (rest (split (x 4) #" "))
              info-map {:chan channel :nick name :cmd cmd :raw x :out c :args args}]
-         (if (false? (contains? ignore-list name)) ;;; Check for ignored users
+         (if (false? (contains? @ignore-list name)) ;;; Check for ignored users
            (if (contains? @cmd-handler cmd)         ;;; Is the cmd in the handler?
              ((@cmd-handler cmd) info-map)))
          (println cmd)))
@@ -91,7 +91,7 @@
 (cmd "join"
      [imap]
      (let [chan (first (imap :args))]
-       (join-channels (imap :out) chan)))
+       (join! (imap :out) chan)))
 
 (cmd "part"
      [imap]
@@ -116,12 +116,13 @@
 
 (cmd "help"
      [imap]
-     (let [cmd-help "Read the source vz!"]
+     (let [cmd-help (join " " (keys @cmd-handler))]
        (write-to-irc imap cmd-help)))
 
 (cmd "reload"
      [imap]
-     (load-file "src/parjer/commands.clj"))
+     (try (load-file "src/parjer/commands.clj")
+          (catch Exception e (println (str "Exception: " (.getMessage e))))))
 
 (cmd "kick"
      [imap]
