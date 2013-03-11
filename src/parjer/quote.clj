@@ -5,7 +5,12 @@
 
 
 ;;; Thanks TimMc ^^
-(def quotes (->> (select website [:p]) (map (comp #(.replaceAll % "\n" " ") clojure.string/trim first unwrap)) (filter not-empty)))
+(def quotes (->>
+             (select website [:p])
+             (map (comp
+                   #(.replaceAll % "\n" " ")
+                   clojure.string/trim first unwrap))
+             (filter not-empty)))
 
 (defn rand-quote []
   (let [n (rand-int (count quotes))]
