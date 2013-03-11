@@ -51,7 +51,7 @@
        (write-to-out c (str "PONG :" (x 4)))
        (println "Pong Sent"))
 
-(event "MODE"
+(event "266"
        [c x]
        (join-channels c (@c :chans)))
 
@@ -135,7 +135,7 @@
      "help [cmd] | Displays the help for the given cmd."
      [imap]
      (let [word (first (imap :args))
-           l (join " " (keys @cmd-handler))]
+           l (join " " (apply sorted-set (keys @cmd-handler)))]
        (if (not= word nil)
          (if (contains? @help-list word)
            (write-to-irc imap (@help-list word))
@@ -175,3 +175,8 @@
            channels (set (rest (rest (imap :args))))
            sock (Socket. server port)]
        (connect* sock channels)))
+
+(cmd "quit"
+     "quit | Quits the network."
+     [imap]
+     (write-to-out (imap :out) "QUIT :C ya suckers!"))
