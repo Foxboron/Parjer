@@ -36,7 +36,7 @@
 (defmacro cmd
   [e help & args-body]
   `(do (add-cmd ~e (fn ~@args-body))
-      (add-help ~e ~help)))
+       (add-help ~e ~help)))
 
 (event "PART"
        [c x]

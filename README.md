@@ -15,8 +15,8 @@ A very basic IRCBot in Clojure.
  :owner #{"Foxboron", "Guy2"}
  :mark "@"}
 ```
-`lein deps`
-`lein run`
+`lein deps`  
+`lein run`  
 
 The setup file should be simple enough.  
 
