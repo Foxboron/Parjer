@@ -23,6 +23,7 @@ The setup file should be simple enough.
 The bot itself got some basic commands, use help and try guess :D  
 
 Based on this code:
+http://nakkaya.com/2010/02/10/a-simple-clojure-irc-client/
 
 ## License
 
