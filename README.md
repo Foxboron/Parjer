@@ -22,6 +22,8 @@ The setup file should be simple enough.
 
 The bot itself got some basic commands, use help and try guess :D  
 
+Based on this code:
+
 ## License
 
 Copyright © 2013 Morten "Foxboron" Linderud
