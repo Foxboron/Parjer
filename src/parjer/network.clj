@@ -1,6 +1,7 @@
 (ns parjer.network
   (:require [parjer.parser :refer (irc-parse)]
-            [parjer.config :refer (fetch-conf)])
+            [parjer.config :refer (fetch-conf)]
+            [clojure.java.io :refer (reader writer)])
   (:import (java.net Socket)
            (java.io PrintWriter InputStreamReader BufferedReader)))
 
@@ -22,7 +23,10 @@
   (send-info c)
   (while (nil? (:exit @c))
     (let [msg (.readLine (:in @c))]
-      (irc-parse c msg))))
+      (cond
+       (re-find #"^ERROR :Closing Link:" msg)
+       (dosync (alter c merge {:exit true}))
+       :else (irc-parse c msg)))))
 
 (defn connect* [sock chans]
   (let [in (BufferedReader. (InputStreamReader. (.getInputStream sock)))

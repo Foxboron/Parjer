@@ -38,10 +38,6 @@
   `(do (add-cmd ~e (fn ~@args-body))
       (add-help ~e ~help)))
 
-(event "NOTICE"
-       [c x]
-       (println "Notice: " x))
-
 (event "PART"
        [c x]
        (println "Part"))
@@ -64,8 +60,8 @@
              info-map {:chan channel :nick name :cmd cmd :raw x :out c :args args}]
          (if (false? (contains? @ignore-list name)) ;;; Check for ignored users
            (if (contains? @cmd-handler cmd)         ;;; Is the cmd in the handler?
-             ((@cmd-handler cmd) info-map)))
-         (println cmd)))
+             ((@cmd-handler cmd) info-map))
+           (println cmd))))
 
 ;;; Lets sandbox this....better....
 (def sb (sandbox secure-tester :timeout 5000))
