@@ -1,6 +1,5 @@
 (ns parjer.commands
-  (:require [parjer.parser :as parser :refer (add-event evt-handler)]
-            [parjer.config :refer (fetch-conf)]
+  (:require [parjer.config :refer (fetch-conf)]
             [parjer.network :as net :refer (join! write-to-out join-channels write-to-irc connect*)]
             [parjer.quote :refer :all]
             [clojure.string :as s :refer (split join)]
@@ -8,60 +7,27 @@
             [clojail.testers :refer [secure-tester]])
   (:import (java.net Socket)))
 
-(def cmd-handler (atom {}))
-
 (def ignore-list (atom #{}))
 
 (def help-list (atom {}))
 
-(defn add-help [event msg]
-  (swap! help-list assoc event msg))
+(def cmd-handler (atom {}))
 
 (defn add-cmd [event f]
   (swap! cmd-handler assoc event f))
 
+(defn add-help [event msg]
+  (swap! help-list assoc event msg))
+
 (defn add-to-ignore [name]
   (swap! ignore-list conj name))
-
-(def owner ((fetch-conf) :owner))
-
-(def mark ((fetch-conf) :mark))
-
-(def pat
-  (re-pattern (str "[^" mark "][\\d\\w\\S]*")))
-
-(defmacro event [e & args-body]
-  `(add-event ~e (fn ~@args-body)))
 
 (defmacro cmd
   [e help & args-body]
   `(do (add-cmd ~e (fn ~@args-body))
        (add-help ~e ~help)))
 
-(event "PART"
-       [c x]
-       (println "Part"))
-
-(event "PING"
-       [c x]
-       (write-to-out c (str "PONG :" (x 4)))
-       (println "Pong Sent"))
-
-(event "266"
-       [c x]
-       (join-channels c (@c :chans)))
-
-(event "PRIVMSG"
-       [c x]
-       (let [name ((split (x 1) #"!") 0)
-             cmd (if (= mark (str (first (x 4)))) (re-find pat (x 4)) "")
-             channel (x 3)
-             args (rest (split (x 4) #" "))
-             info-map {:chan channel :nick name :cmd cmd :raw x :out c :args args}]
-         (if (false? (contains? @ignore-list name)) ;;; Check for ignored users
-           (if (contains? @cmd-handler cmd)         ;;; Is the cmd in the handler?
-             ((@cmd-handler cmd) info-map))
-           (println cmd))))
+(def owner ((fetch-conf) :owner))
 
 ;;; Lets sandbox this....better....
 (def sb (sandbox secure-tester :timeout 5000))
