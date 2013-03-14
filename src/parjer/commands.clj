@@ -71,32 +71,29 @@
 (cmd "part"
      "part [chan] | Makes the bot leave the given chan."
      [imap]
-     (let [st (first (imap :args))]
-       (write-to-out (imap :out) (str "PART :" st))))
+     (write-to-out (imap :out) (str "PART :" (imap :arg))))
 
 (cmd "add-ignore"
      "add-ignore [nick] | Adds the given nick too the ignore list."
      [imap]
-     (let [st (first (imap :args))]
-       (add-to-ignore st)))
+     (add-to-ignore (imap :arg)))
 
 (cmd "remove-ignore"
      "remove-ignore [nick] | Removes the given nick from the ignore list."
      [imap]
-     (let [st (first (imap :args))]
-       (reset! ignore-list (remove #(= % st) ignore-list))))
+     (reset! ignore-list (remove #(= % (imap :arg)) ignore-list)))
 
 (cmd "whisper"
      "whisper [channel|nick] [& stuff] | Tells stuff too the given channel or nick."
      [imap]
-     (let  [chan (first (imap :args))
+     (let  [chan (imap :arg)
             say (join " " (rest (imap :args)))]
        (write-to-out (imap :out) (str "PRIVMSG " chan " :" say))))
 
 (cmd "help"
      "help [cmd] | Displays the help for the given cmd."
      [imap]
-     (let [word (first (imap :args))
+     (let [word (imap :arg)
            l (join " " (apply sorted-set (keys @cmd-handler)))]
        (if (not= word nil)
          (if (contains? @help-list word)
@@ -113,7 +110,7 @@
 (cmd "kick"
      "kick [nick] | Kick the given person."
      [imap]
-     (let [nick (first (imap :args))]
+     (let [nick (imap :arg)]
        (write-to-out (imap :out) (str "KICK " (imap :chan) " " nick " :Bot Kick"))))
 
 (cmd "quote"
@@ -125,7 +122,7 @@
 (cmd "nick"
      "nick | Changes the nick. Needs owner."
      [imap]
-     (let [nick (first (imap :args))]
+     (let [nick (imap :arg)]
        (if (contains? owner (imap :nick))
          (write-to-out (imap :out) (str "NICK " nick)))))
 
