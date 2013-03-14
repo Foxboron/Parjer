@@ -13,8 +13,6 @@
   (let [msg (re-parse x)
         cmd (msg 2)]
     (if (contains? @evt-handler cmd)
-      (doto
-          (Thread.
-           #((@evt-handler cmd) conn msg)) (.start)))
+      (future ((@evt-handler cmd) conn msg)))
     (println cmd) ;; cmd
     (println x))) ;; x

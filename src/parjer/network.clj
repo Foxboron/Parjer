@@ -32,9 +32,7 @@
   (let [in (BufferedReader. (InputStreamReader. (.getInputStream sock)))
         out (PrintWriter. (.getOutputStream sock))
         conn (ref {:in in :out out :chans chans})]
-    (doto
-        (Thread.
-         #(conn-handler conn)) (.start))))
+    (future (conn-handler conn))))
 
 (defn connect [servs]
   (doseq [i servs]
