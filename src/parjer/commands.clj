@@ -104,7 +104,8 @@
 (cmd "reload"
      "reload | Reloads the commands.clj file (hacky stuff)."
      [imap]
-     (try (load-file "src/parjer/commands.clj")
+     (try
+       (load-file "src/parjer/commands.clj")
           (catch Exception e (println (str "Exception: " (.getMessage e))))))
 
 (cmd "kick"
