@@ -44,10 +44,20 @@
      (let [st (join " " (imap :args))]
        (write-to-irc imap (str "λ → " (excp! st)))))
 
+(def start-timer (. System (nanoTime)))
+
+(defn uptime [x]
+  (let [def-time (bigint (/ (bigint (- (. System (nanoTime)) x)) 1000000000.0))
+        sec (mod def-time 60)
+        mins (bigint (/ def-time 60))
+        hours (bigint (/ mins 60))
+        days (bigint (/ hours 24))]
+    (str days "d " hours "h "  mins "m " sec "s total: " def-time "s")))
+
 (cmd "uptime"
      "uptime | Does nothing."
      [imap]
-     (write-to-irc imap "NOTIME"))
+    (write-to-irc imap (uptime start-timer)))
 
 (cmd "say"
      "say [& stuff] | Tells you stuff."
