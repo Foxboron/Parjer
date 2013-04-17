@@ -189,14 +189,10 @@
                  "Basket-Cockle"])
 
 
-(defn rand-swear []
+(defn rand-swear [& args]
   (let [first (rand-nth first-word)
         second (rand-nth second-word)
         third (rand-nth third-word)]
-    (str "Thou " first " " second " " third"!")))
-
-(defn rand-swear-target [name]
-  (let [first (rand-nth first-word)
-        second (rand-nth second-word)
-        third (rand-nth third-word)]
-    (str name ", thou " first " " second " " third "!")))
+    (if (nil? (.get args 0))
+      (str "Thou " first " " second " " third "!")
+      (str (.get args 0) ", thou " first " " second " " third"!"))))

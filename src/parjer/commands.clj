@@ -156,7 +156,4 @@
      "swear {nick} | Swear at thou nick!"
      [imap]
      (let [nick (imap :arg)]
-       (println "TEST")
-       (if nick
-         (write-to-irc imap (rand-swear-target nick))
-         (write-to-irc imap (rand-swear)))))
+       (write-to-irc imap (rand-swear nick))))
