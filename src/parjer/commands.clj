@@ -2,6 +2,7 @@
   (:require [parjer.config :refer (fetch-conf)]
             [parjer.network :as net :refer (join! write-to-out join-channels write-to-irc connect*)]
             [parjer.quote :refer :all]
+            [parjer.swear :refer :all]
             [clojure.string :as s :refer (split join)]
             [clojail.core :refer [sandbox]]
             [clojail.testers :refer [secure-tester]])
@@ -150,3 +151,12 @@
      "quit | Quits the network."
      [imap]
      (write-to-out (imap :out) "QUIT :C ya suckers!"))
+
+(cmd "swear"
+     "swear {nick} | Swear at thou nick!"
+     [imap]
+     (let [nick (imap :arg)]
+       (println "TEST")
+       (if nick
+         (write-to-irc imap (rand-swear-target nick))
+         (write-to-irc imap (rand-swear)))))
