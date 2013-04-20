@@ -1,4 +1,5 @@
-(ns parjer.swear)
+(ns parjer.swear
+  (:gen-class))
 
 
 (def first-word ["artless"

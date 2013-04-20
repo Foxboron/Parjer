@@ -1,4 +1,5 @@
-(ns parjer.parser)
+(ns parjer.parser
+    (:gen-class))
 
 (def evt-handler
   (atom {}))

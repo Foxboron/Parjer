@@ -1,4 +1,5 @@
 (ns parjer.quote
+    (:gen-class)
   (:require [net.cgrand.enlive-html :refer :all]))
 
 (def website (html-resource (java.net.URL. "http://www.cs.yale.edu/quotes.html")))

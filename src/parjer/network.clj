@@ -1,4 +1,5 @@
 (ns parjer.network
+  (:gen-class)
   (:require [parjer.parser :refer (irc-parse)]
             [parjer.config :refer (fetch-conf)]
             [clojure.java.io :refer (reader writer)])

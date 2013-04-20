@@ -1,4 +1,5 @@
 (ns parjer.commands
+  (:gen-class)
   (:require [parjer.config :refer (fetch-conf)]
             [parjer.network :as net :refer (join! write-to-out join-channels write-to-irc connect*)]
             [parjer.quote :refer :all]

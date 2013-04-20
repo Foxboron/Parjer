@@ -1,4 +1,5 @@
-(ns parjer.config)
+(ns parjer.config
+    (:gen-class))
 
 (defn get-config []
   (read-string (slurp "setup")))
