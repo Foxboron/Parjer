@@ -38,8 +38,6 @@
   (try (sb (read-string ev))
        (catch Exception e (str "Exception: " (.getMessage e)))))
 
-
-;;; Common! Tell me how stupid i am!
 (cmd "eval"
      "eval [& stuff] | Evals the given stuff in a 'secure' sandbox."
      [imap]
@@ -47,7 +45,6 @@
        (write-to-irc imap (str "λ → " (excp! st)))))
 
 (def start-timer (. System (nanoTime)))
-
 (defn uptime [x]
   (let [def-time (bigint (/ (bigint (- (. System (nanoTime)) x)) 1000000000.0))
         sec (mod def-time 60)

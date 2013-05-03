@@ -191,9 +191,9 @@
 
 
 (defn rand-swear [& args]
-  (let [first (rand-nth first-word)
-        second (rand-nth second-word)
-        third (rand-nth third-word)]
-    (if (nil? (.get args 0))
-      (str "Thou " first " " second " " third "!")
-      (str (.get args 0) ", thou " first " " second " " third"!"))))
+  (let [first_w (rand-nth first-word)
+        second_w (rand-nth second-word)
+        third_w (rand-nth third-word)]
+    (if (or (nil? args) (nil? (first args)))
+      (str (format "Thou %s %s %s!" first_w second_w third_w))
+      (str (format "%s, thou %s %s %s!" (first args) first_w second_w third_w)))))

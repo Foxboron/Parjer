@@ -1,4 +1,4 @@
-{:nick "Cjoey"
+{:nick "Test"
  :servers [{:server "irc.codetalk.io"
             :port 6667
             :chans #{"#lobby" "#test"}}]

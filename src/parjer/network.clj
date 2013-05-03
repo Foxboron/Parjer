@@ -2,19 +2,16 @@
   (:gen-class)
   (:require [parjer.parser :refer (irc-parse)]
             [parjer.config :refer (fetch-conf)]
-            [clojure.java.io :refer (reader writer)])
-  (:import (java.net Socket)
-           (java.io PrintWriter InputStreamReader BufferedReader)))
+            [clojure.java.io :as io])
+  (:import (java.net Socket)))
 
 
 (def nick ((fetch-conf) :nick))
 
-(def servers ((fetch-conf) :servers))
-
 (defn write-to-out [c msg]
-  (doto (:out @c)
-    (.println (str msg "\r"))
-    (.flush)))
+ (binding [*out* (:out @c)]
+      (println msg)))
+
 
 (defn send-info [conn]
   (write-to-out conn (str "NICK " nick))
@@ -26,12 +23,12 @@
     (let [msg (.readLine (:in @c))]
       (cond
        (re-find #"^ERROR :Closing Link:" msg)
-       (dosync (alter c merge {:exit true}))
+         (dosync (alter c merge {:exit true}))
        :else (irc-parse c msg)))))
 
 (defn connect* [sock chans]
-  (let [in (BufferedReader. (InputStreamReader. (.getInputStream sock)))
-        out (PrintWriter. (.getOutputStream sock))
+  (let [in (io/reader sock)
+        out (io/writer sock)
         conn (ref {:in in :out out :chans chans})]
     (future (conn-handler conn))))
 
