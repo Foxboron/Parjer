@@ -1,6 +1,6 @@
 {:nick "Cjoey"
- :servers [{:server "irc.freenode.net"
+ :servers [{:server "irc.codetalk.io"
             :port 6667
-            :chans #{"#studypython"}}]
+            :chans #{"#lobby"}}]
  :owner #{"Foxboron"}
  :mark "@"}
