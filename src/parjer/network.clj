@@ -7,6 +7,8 @@
 
 
 (def nick ((fetch-conf) :nick))
+(def servers ((fetch-conf) :servers))
+
 
 (defn write-to-out [c msg]
  (binding [*out* (:out @c)]
