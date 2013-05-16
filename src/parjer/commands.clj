@@ -35,8 +35,10 @@
 (def sb (sandbox secure-tester :timeout 5000))
 
 (defn excp! [ev]
-  (try (do (sb (read-string ev) {#'*out* writer}) (str writer))
-       (catch Exception e (str "Exception: " (.getMessage e)))))
+  (try  (let [writer (java.io.StringWriter.)]
+          (sb (read-string ev) {#'*out* writer})
+          (str writer))
+        (catch Exception e (str "Exception: " (.getMessage e)))))
 
 (cmd "eval"
      "eval [& stuff] | Evals the given stuff in a 'secure' sandbox."
