@@ -35,7 +35,7 @@
 (def sb (sandbox secure-tester :timeout 5000))
 
 (defn excp! [ev]
-  (try (sb (read-string ev))
+  (try (do (sb (read-string ev) {#'*out* writer}) (str writer))
        (catch Exception e (str "Exception: " (.getMessage e)))))
 
 (cmd "eval"
