@@ -36,7 +36,7 @@
 
 (defn excp! [ev]
   (try  (let [writer (java.io.StringWriter.)]
-          (sb '(println (read-string ev)) {#'*out* writer})
+          (sb (println (read-string ev)) {#'*out* writer})
           (str writer))
         (catch Exception e (str "Exception: " (.getMessage e)))))
 
