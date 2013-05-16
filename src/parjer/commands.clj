@@ -36,7 +36,7 @@
 
 (defn excp! [ev]
   (try  (let [writer (java.io.StringWriter.)]
-          (sb (read-string ev) {#'*out* writer})
+          (sb '(println (read-string ev)) {#'*out* writer})
           (str writer))
         (catch Exception e (str "Exception: " (.getMessage e)))))
 
@@ -47,6 +47,7 @@
        (write-to-irc imap (str "λ → " (excp! st)))))
 
 (def start-timer (. System (nanoTime)))
+
 (defn uptime [x]
   (let [def-time (bigint (/ (bigint (- (. System (nanoTime)) x)) 1000000000.0))
         sec (mod def-time 60)
