@@ -4,15 +4,14 @@
 
 (defn send-info []
   (write-out {}))
-x
 
 
 (defmulti write-out
   "Writes to IRC"
   (fn [data]
-    (if (find data :raw)
-      :raw
-      nil)))
+    (cond
+     (find data :raw) :raw
+     :else nil)))
 
 
 (defmethod write-out :raw

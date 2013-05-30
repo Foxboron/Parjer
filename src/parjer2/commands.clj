@@ -1,4 +1,5 @@
-(ns parjer2.commands)
+(ns parjer2.commands
+  )
 
 (def ignore-list (atom #{}))
 
