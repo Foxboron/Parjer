@@ -1,0 +1,10 @@
+{:nick "Cjoey",
+ :servers
+ [{:server "irc.test.net",
+   :port 6667,
+   :chans #{"#lobby"}}
+  {:server "test",
+   :port 6667,
+   :chans #{"lol"}}],
+ :owner #{"Foxboron"},
+ :mark "@"}
