@@ -1,5 +1,17 @@
 (ns parjer2.commands
-  )
+  (:require [parjer2.file :as file]
+            [clojail.core :refer [sandbox]]
+            [clojail.testers :refer [secure-tester]]
+            [clojure.string :as s :refer (split join)]))
+
+(declare write-to-irc)
+(declare write-to-out)
+(declare join!)
+(declare rand-quote)
+(declare Socket)
+(declare connect*)
+(declare rand-swear)
+(declare cmd-dispatch)
 
 (def ignore-list (atom #{}))
 
@@ -16,12 +28,16 @@
 (defn add-to-ignore [name]
   (swap! ignore-list conj name))
 
+(defn fetch-cmd
+  [[_ cmd :as msg]]
+  (cmd cmd-handler))
+
 (defmacro cmd
   [e help & args-body]
   `(do (add-cmd ~(str e) (fn ~@args-body))
        (add-help ~(str e) ~help)))
 
-(def owner ((fetch-conf) :owner))
+(def owner (file/fetch-conf :owner))
 
 ;;; Lets sandbox this....better....
 (def sb (sandbox secure-tester :timeout 5000))
@@ -37,24 +53,25 @@
        (write-to-irc imap (str "λ → " (excp! st)))))
 
 (def start-timer (. System (nanoTime)))
+
 (defn uptime [x]
   (let [def-time (bigint (/ (bigint (- (. System (nanoTime)) x)) 1000000000.0))
         sec (mod def-time 60)
-        mins (bigint (/ def-time 60))
-        hours (bigint (/ mins 60))
-        days (bigint (/ hours 24))]
-    (str days "d " hours "h "  mins "m " sec "s total: " def-time "s")))
+        mins (int (/ def-time 60))
+        hours (int (/ mins 60))
+        days (int (/ hours 24))]
+    (str days "d " (mod hours 24) "h " (mod mins 60) "m " sec "s total: " def-time "s")))
 
 (cmd "uptime"
      "uptime | Does nothing."
      [imap]
     (write-to-irc imap (uptime start-timer)))
 
-(cmd "say"
+(cmd say
      "say [& stuff] | Tells you stuff."
-     [imap]
-     (let [st (join " " (imap :args))]
-       (write-to-irc imap st)))
+     [{args :args in :in :as imap}]
+     (let [st (join " " args)]
+       {:msg st :in in}))
 
 
 ;;; This is random. I am 100% sure!
@@ -134,7 +151,7 @@
      (let [server (first (imap :args))
            port (Integer. (first (rest (imap :args))))
            channels (set (rest (rest (imap :args))))
-           sock (Socket. server port)]
+           sock (Socket server port)]
        (connect* sock channels)))
 
 (cmd "quit"

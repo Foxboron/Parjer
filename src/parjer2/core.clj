@@ -24,9 +24,8 @@
     (let [conn (connect i)]
       (swap! connected-server-list conj conn))))
 
-
 (defn -main [& args]
   (let [servs (wrap-servers servers-list)
         conns (connect-servers servs)]
-    (doseq [i conns]
-      (future net/conn-handler i))))
+    (doseq [i @connected-server-list]
+      (future (net/conn-handler i)))))

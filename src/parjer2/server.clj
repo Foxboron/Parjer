@@ -1,6 +1,5 @@
 (ns parjer2.server
-  (:require [parjer2.file :as file]
-            [parjer2.network :as network]
+  (:require [parjer2.network :as network]
             [clojure.java.io :as io])
   (:import  [java.net Socket]))
 
@@ -27,7 +26,7 @@
 
   ServerConnected
   (join [server chan]
-    {:raw (str "JOIN :" chan) :out (:out server)})
+    (network/write-out {:raw (str "JOIN :" chan) :out (:out server)}))
   (part [server chan]
     {:raw (str "PART :" chan) :out (:out server)})
   (quit [server]
